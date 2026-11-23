@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Laboratory</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <style>
+    :root {
+      /* Exact 8-color palette */
+      --slate-dark:   #2B343B;
+      --slate-mid:    #56636B;
+      --slate-light:  #71848E;
+      --ice-blue:     #D3EFF8;
+      --cream-yellow: #F2ECA6;
+      --gold:         #F2C200;
+      --orange:       #EF9700;
+      --rust-danger:  #B84204;
+
+      /* Semantic UI tokens */
+      --bg-base:      #050708;
+      --panel-bg:     rgba(43, 52, 59, 0.86);
+      --panel-solid:  #2B343B;
+      --panel-elev:   rgba(31, 38, 43, 0.92);
+      --border-soft:  rgba(113, 132, 142, 0.35);
+      --text-main:    #F1F6F8;
+      --text-muted:   #A7B6BE;
+      --radius-lg:    14px;
+      --radius-md:    9px;
+      --radius-sm:    6px;
+      --shadow:       0 18px 45px rgba(0, 0, 0, 0.55);
+      --font-sans:    "Segoe UI", "Ubuntu", system-ui, -apple-system, sans-serif;
+      --font-mono:    "Cascadia Code", "Consolas", "Ubuntu Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 18% 15%, rgba(211, 239, 248, 0.06), transparent 42%),
+        radial-gradient(circle at 85% 85%, rgba(239, 151, 0, 0.08), transparent 45%),
+        url('/assets/background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5, 7, 8, 0.48) 0%, rgba(5, 7, 8, 0.68) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hidden { display: none !important; }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ice-blue);
+      border-radius: 50%;
+      padding: 6px;
+      box-shadow: 0 0 0 2px rgba(211, 239, 248, 0.25), 0 0 20px rgba(211, 239, 248, 0.18);
+      flex-shrink: 0;
+    }
+
+    .logo-badge img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+
+    .logo-badge.sm { width: 42px; height: 42px; padding: 5px; }
+    .logo-badge.lg { width: 76px; height: 76px; padding: 10px; }
+
+    /* =========================================================================
+       LANDING GATE (GUEST vs ADMIN)
+       ========================================================================= */
+    .gate-screen {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 18px;
+    }
+
+    .gate-card {
+      width: 100%;
+      max-width: 760px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-soft);
+      border-top: 3px solid var(--orange);
+      border-radius: var(--radius-lg);
+      padding: 36px 34px 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .gate-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .gate-kicker {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ice-blue);
+      margin-bottom: 4px;
+    }
+
+    .gate-title {
+      font-size: clamp(24px, 3.6vw, 34px);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #FFFFFF;
+    }
+
+    .gate-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .role-grid { grid-template-columns: 1fr; }
+      .gate-header { flex-direction: column; text-align: center; }
+    }
+
+    .role-card {
+      background: var(--panel-elev);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .role-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .role-card.guest:hover { border-color: var(--ice-blue); }
+    .role-card.admin:hover { border-color: var(--orange); }
+
+    .role-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+
+    .role-card.guest .role-tag {
+      background: rgba(211, 239, 248, 0.14);
+      color: var(--ice-blue);
+      border: 1px solid rgba(211, 239, 248, 0.35);
+    }
+
+    .role-card.admin .role-tag {
+      background: rgba(239, 151, 0, 0.16);
+      color: var(--gold);
+      border: 1px solid rgba(239, 151, 0, 0.45);
+    }
+
+    .role-card h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+    }
+
+    .role-card p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .admin-login-box {
+      margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .login-error {
+      font-size: 12.5px;
+      color: var(--cream-yellow);
+      background: rgba(184, 66, 4, 0.28);
+      border: 1px solid var(--rust-danger);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+    }
+
+    .gate-footer {
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--slate-light);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-right: 6px;
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    /* =========================================================================
+       INPUTS & BUTTONS
+       ========================================================================= */
+    .input {
+      width: 100%;
+      background: rgba(16, 20, 24, 0.85);
+      border: 1px solid var(--slate-mid);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input:focus {
+      border-color: var(--ice-blue);
+      box-shadow: 0 0 0 3px rgba(211, 239, 248, 0.16);
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--orange);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 9px 15px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-ice { background: var(--ice-blue); color: #162026; }
+    .btn-ice:hover:not(:disabled) { background: #E4F6FC; }
+
+    .btn-orange { background: var(--orange); color: #14181B; }
+    .btn-orange:hover:not(:disabled) { background: var(--gold); }
+
+    .btn-ghost {
+      background: rgba(86, 99, 107, 0.25);
+      color: var(--text-main);
+      border-color: var(--slate-mid);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: rgba(113, 132, 142, 0.35);
+      border-color: var(--ice-blue);
+    }
+
+    .btn-danger { background: var(--rust-danger); color: #FFFFFF; }
+    .btn-danger:hover:not(:disabled) { background: #D14E08; }
+
+    .btn-sm { font-size: 12.5px; padding: 6px 10px; }
+
+    /* =========================================================================
+       MAIN WORKSPACE APP
+       ========================================================================= */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px 18px 28px;
+      gap: 16px;
+    }
+
+    .topbar {
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-soft);
+      border-top: 3px solid var(--ice-blue);
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar.admin-mode { border-top-color: var(--orange); }
+
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-title { font-size: 20px; font-weight: 700; letter-spacing: 0.02em; }
+    .brand-sub { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); }
+
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .role-pill {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+
+    .role-pill.guest {
+      background: rgba(211, 239, 248, 0.14);
+      color: var(--ice-blue);
+      border: 1px solid rgba(211, 239, 248, 0.4);
+    }
+
+    .role-pill.admin {
+      background: rgba(239, 151, 0, 0.2);
+      color: var(--gold);
+      border: 1px solid rgba(242, 194, 0, 0.55);
+    }
+
+    .workspace-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-strip {
+      padding: 10px 20px;
+      background: linear-gradient(90deg, rgba(239, 151, 0, 0.14), rgba(43, 52, 59, 0.25));
+      border-bottom: 1px solid rgba(239, 151, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .admin-strip-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cream-yellow);
+      font-weight: 600;
+    }
+
+    /* Bulk Selection Bar */
+    .bulk-bar {
+      padding: 10px 20px;
+      background: rgba(242, 194, 0, 0.12);
+      border-bottom: 1px solid rgba(242, 194, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13.5px;
+    }
+
+    .bulk-count {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .toolbar {
+      padding: 14px 20px;
+      background: rgba(25, 31, 35, 0.72);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .crumb-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--ice-blue);
+      font-family: inherit;
+      font-size: inherit;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .crumb-btn:hover {
+      background: rgba(211, 239, 248, 0.12);
+      border-color: rgba(211, 239, 248, 0.3);
+    }
+
+    .crumb-sep { color: var(--slate-light); }
+
+    .toolbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .search-box { width: 210px; padding: 7px 11px; font-size: 13px; }
+
+    /* File Table */
+    .table-wrap { width: 100%; overflow-x: auto; flex: 1; }
+
+    table { width: 100%; border-collapse: collapse; min-width: 660px; }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(20, 25, 29, 0.55);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(113, 132, 142, 0.18);
+      transition: background 0.12s ease;
+    }
+
+    tbody tr:hover { background: rgba(211, 239, 248, 0.06); }
+    tbody tr.selected { background: rgba(239, 151, 0, 0.13); }
+
+    tbody td { padding: 12px 16px; font-size: 14px; vertical-align: middle; }
+
+    .col-check { width: 44px; text-align: center; }
+
+    .item-name-cell { display: flex; align-items: center; gap: 11px; font-weight: 500; }
+
+    .item-link {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      word-break: break-word;
+    }
+
+    .item-link.folder { color: var(--cream-yellow); font-weight: 600; }
+    .item-link.folder:hover { color: var(--gold); text-decoration: underline; }
+
+    .mono-col {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .empty-state { padding: 58px 20px; text-align: center; color: var(--text-muted); }
+    .empty-state h3 { color: var(--ice-blue); margin-bottom: 6px; font-size: 16px; }
+
+    .statusbar {
+      padding: 10px 20px;
+      background: rgba(20, 25, 29, 0.78);
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--slate-light);
+    }
+
+    .statusbar strong { color: var(--ice-blue); font-weight: 600; }
+
+    /* =========================================================================
+       MODALS
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(4, 6, 8, 0.76);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: var(--panel-solid);
+      border: 1px solid var(--slate-mid);
+      border-top: 3px solid var(--orange);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal.danger { border-top-color: var(--rust-danger); }
+    .modal h3 { font-size: 19px; margin-bottom: 6px; color: #FFFFFF; }
+    .modal-desc { font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ice-blue);
+      margin-bottom: 6px;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      color: var(--cream-yellow);
+      margin: 12px 0 14px;
+      cursor: pointer;
+    }
+
+    /* Item Preview Lists inside Modals (Bulk Move / Delete / Upload Queue) */
+    .item-preview-list {
+      max-height: 175px;
+      overflow-y: auto;
+      background: rgba(16, 20, 24, 0.75);
+      border: 1px solid var(--slate-mid);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+    }
+
+    .preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 5px 2px;
+      border-bottom: 1px solid rgba(113, 132, 142, 0.2);
+    }
+
+    .preview-row:last-child { border-bottom: none; }
+    .preview-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-main); }
+
+    .queue-badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .queue-badge.queued   { background: rgba(113, 132, 142, 0.25); color: var(--text-muted); }
+    .queue-badge.active   { background: rgba(239, 151, 0, 0.25); color: var(--gold); }
+    .queue-badge.done     { background: rgba(211, 239, 248, 0.2); color: var(--ice-blue); }
+    .queue-badge.failed   { background: rgba(184, 66, 4, 0.35); color: var(--cream-yellow); }
+
+    .danger-callout {
+      background: rgba(184, 66, 4, 0.22);
+      border: 1px solid var(--rust-danger);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 13.5px;
+      color: var(--cream-yellow);
+    }
+
+    .danger-list {
+      margin-top: 8px;
+      max-height: 165px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: #FFFFFF;
+      list-style: none;
+    }
+
+    .danger-list li {
+      padding: 3px 0;
+      word-break: break-all;
+      border-bottom: 1px solid rgba(242, 236, 166, 0.15);
+    }
+    .danger-list li:last-child { border-bottom: none; }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    /* Progress Bar for Large Uploads */
+    .progress-wrap {
+      margin-top: 12px;
+      background: rgba(15, 20, 24, 0.8);
+      border: 1px solid var(--slate-mid);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ice-blue);
+      margin-bottom: 7px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #171D21;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+      transition: width 0.12s linear;
+    }
+
+    /* Toast Notifications */
+    .toast-stack {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    }
+
+    .toast {
+      background: var(--panel-solid);
+      border: 1px solid var(--slate-mid);
+      border-left: 4px solid var(--ice-blue);
+      color: var(--text-main);
+      padding: 12px 15px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      box-shadow: var(--shadow);
+      animation: slideIn 0.18s ease;
+    }
+
+    .toast.success { border-left-color: var(--gold); }
+    .toast.error   { border-left-color: var(--rust-danger); color: var(--cream-yellow); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       SCREEN 1: ROLE SELECTION GATE (GUEST OR ADMIN)
+       ========================================================================= -->
+  <section id="gateScreen" class="gate-screen">
+    <div class="gate-card">
+      <div class="gate-header">
+        <div class="logo-badge lg">
+          <img src="/assets/logo.png" alt="Projects Laboratory Logo" />
+        </div>
+        <div>
+          <div class="gate-kicker">Local File Repository &bull; Pure Socket API</div>
+          <h1 class="gate-title">Projects Laboratory</h1>
+          <p class="gate-subtitle">
+            Central student hub for courses, software installers, engineering tools, and lab files.
+          </p>
+        </div>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card guest">
+          <div>
+            <span class="role-tag">Student Access</span>
+            <h2>Continue as Guest</h2>
+            <p>
+              Browse directories and download courses, programs, and tools immediately with no password required.
+            </p>
+          </div>
+          <button id="btnEnterGuest" class="btn btn-ice" type="button">
+            Enter as Guest
+          </button>
+        </div>
+
+        <div class="role-card admin">
+          <div>
+            <span class="role-tag">Protected Access</span>
+            <h2>Sign in as Admin</h2>
+            <p>
+              Upload or update large files, create folder paths, move or rename items, and permanently delete files.
+            </p>
+          </div>
+          <form id="adminLoginForm" class="admin-login-box">
+            <input
+              id="adminPasswordInput"
+              class="input"
+              type="password"
+              placeholder="Enter admin password"
+              autocomplete="current-password"
+              required
+            />
+            <div id="loginError" class="login-error hidden"></div>
+            <button id="btnLoginAdmin" class="btn btn-orange" type="submit">
+              Unlock Admin Panel
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="gate-footer">
+        <span><span class="status-dot"></span>Server: <span id="gateServerStatus">Connecting...</span></span>
+        <span id="gateThreadInfo">Protocol: HTTP/1.1 + JSON API</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SCREEN 2: FILE EXPLORER & ADMIN WORKSPACE
+       ========================================================================= -->
+  <main id="appShell" class="app-shell hidden">
+    <header id="topBar" class="topbar">
+      <div class="brand">
+        <div class="logo-badge sm">
+          <img src="/assets/logo.png" alt="Projects Laboratory Logo" />
+        </div>
+        <div>
+          <div class="brand-title">Projects Laboratory</div>
+          <div class="brand-sub">Courses &bull; Programs &bull; Tools &bull; Lab Archives</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <span id="roleBadge" class="role-pill guest">Guest</span>
+        <button id="btnSwitchRole" class="btn btn-ghost btn-sm" type="button">Switch Role</button>
+        <button id="btnLogout" class="btn btn-danger btn-sm hidden" type="button">Log Out</button>
+      </div>
+    </header>
+
+    <section class="workspace-card">
+      <!-- Admin Quick Controls -->
+      <div id="adminStrip" class="admin-strip hidden">
+        <div class="admin-strip-label">
+          <span>Admin Controls Active &bull; Use checkboxes for bulk Move or Delete</span>
+        </div>
+        <div class="toolbar-actions">
+          <button id="btnOpenUpload" class="btn btn-orange btn-sm" type="button">+ Upload Files</button>
+          <button id="btnOpenFolder" class="btn btn-ice btn-sm" type="button">+ New Folder</button>
+        </div>
+      </div>
+
+      <!-- Bulk Selection Action Bar (appears when 1+ items checked in Admin mode) -->
+      <div id="bulkBar" class="bulk-bar hidden">
+        <span id="bulkCountLabel" class="bulk-count">0 items selected</span>
+        <div class="toolbar-actions">
+          <button id="btnBulkMove" class="btn btn-orange btn-sm" type="button">Move Selected</button>
+          <button id="btnBulkDelete" class="btn btn-danger btn-sm" type="button">Delete Selected</button>
+          <button id="btnClearSelection" class="btn btn-ghost btn-sm" type="button">Clear</button>
+        </div>
+      </div>
+
+      <!-- Navigation & Search Toolbar -->
+      <div class="toolbar">
+        <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
+        <div class="toolbar-actions">
+          <input id="searchInput" class="input search-box" type="search" placeholder="Filter this folder..." />
+          <button id="btnUpFolder" class="btn btn-ghost btn-sm" type="button" disabled>&uarr; Up</button>
+          <button id="btnRefresh" class="btn btn-ghost btn-sm" type="button">&#x21bb; Refresh</button>
+        </div>
+      </div>
+
+      <!-- Directory Listing Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th id="thSelectAll" class="col-check hidden">
+                <input id="selectAllCheckbox" type="checkbox" title="Select all visible items" />
+              </th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Size</th>
+              <th>Modified</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="fileTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Live Telemetry Footer -->
+      <footer class="statusbar">
+        <span>Path: <strong id="statusPath">/</strong> &bull; Items: <strong id="statusCount">0</strong></span>
+        <span>Last Worker Thread: <strong id="statusThread">--</strong></span>
+      </footer>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       MODAL: MULTI-FILE UPLOAD / SINGLE FILE UPDATE
+       ========================================================================= -->
+  <div id="uploadModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3 id="uploadModalTitle">Upload Files</h3>
+      <p id="uploadModalDesc" class="modal-desc">
+        Select one or multiple files. Each file streams in 64 KB chunks over raw TCP sockets.
+      </p>
+
+      <div class="field">
+        <label for="uploadFileInput">Select File(s)</label>
+        <input id="uploadFileInput" class="input" type="file" multiple />
+      </div>
+
+      <div id="singleTargetNameField" class="field">
+        <label for="uploadTargetName">Target Filename (inside current folder)</label>
+        <input id="uploadTargetName" class="input" type="text" placeholder="e.g. LabTools_v2.zip" />
+      </div>
+
+      <div id="uploadQueueList" class="item-preview-list hidden"></div>
+
+      <label class="checkbox-row">
+        <input id="uploadOverwriteCheck" type="checkbox" />
+        <span>Overwrite / update existing files with the same name</span>
+      </label>
+
+      <div id="uploadProgressWrap" class="progress-wrap hidden">
+        <div class="progress-meta">
+          <span id="uploadProgressText">0%</span>
+          <span id="uploadProgressBytes">0 B / 0 B</span>
+        </div>
+        <div class="progress-track">
+          <div id="uploadProgressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnCancelUpload" class="btn btn-ghost" type="button">Cancel</button>
+        <button id="btnStartUpload" class="btn btn-orange" type="button">Start Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CREATE NEW FOLDER / PATH
+       ========================================================================= -->
+  <div id="folderModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3>Create New Folder</h3>
+      <p class="modal-desc">
+        Enter a folder name or nested path like <code>Networks/Wireshark</code>.
+      </p>
+      <form id="folderForm">
+        <div class="field">
+          <label for="folderNameInput">Folder Name / Subpath</label>
+          <input id="folderNameInput" class="input" type="text" placeholder="e.g. Semester_2/OS_Lab" required />
+        </div>
+        <div class="modal-actions">
+          <button id="btnCancelFolder" class="btn btn-ghost" type="button">Cancel</button>
+          <button class="btn btn-ice" type="submit">Create Folder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: SINGLE MOVE/RENAME OR BULK MOVE
+       ========================================================================= -->
+  <div id="moveModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3 id="moveModalTitle">Move or Rename</h3>
+      <p id="moveModalDesc" class="modal-desc">
+        Edit the destination path relative to the root of <strong>Projects Laboratory</strong>.
+      </p>
+      <form id="moveForm">
+        <!-- Single Move Fields -->
+        <div id="singleMoveFields">
+          <div class="field">
+            <label>Current Path</label>
+            <input id="moveSourceInput" class="input" type="text" readonly />
+          </div>
+          <div class="field">
+            <label for="moveDestInput">New Destination Path</label>
+            <input id="moveDestInput" class="input" type="text" />
+          </div>
+        </div>
+
+        <!-- Bulk Move Fields -->
+        <div id="bulkMoveFields" class="hidden">
+          <div class="field">
+            <label id="bulkMoveListLabel">Items to Move</label>
+            <div id="bulkMovePreviewList" class="item-preview-list"></div>
+          </div>
+          <div class="field">
+            <label for="bulkMoveDestDir">Destination Folder Path</label>
+            <input
+              id="bulkMoveDestDir"
+              class="input"
+              type="text"
+              list="folderSuggestions"
+              placeholder="e.g. Courses/Networks (leave empty for root /)"
+            />
+            <datalist id="folderSuggestions"></datalist>
+            <div class="field-hint">
+              Leave blank or enter <code>/</code> to move items into the root folder.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btnCancelMove" class="btn btn-ghost" type="button">Cancel</button>
+          <button id="btnSubmitMove" class="btn btn-orange" type="submit">Move Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: PERMANENT DELETE CONFIRMATION (SINGLE OR BULK)
+       ========================================================================= -->
+  <div id="deleteModal" class="modal-backdrop hidden">
+    <div class="modal danger">
+      <h3>Confirm Permanent Deletion</h3>
+      <p class="modal-desc">
+        This action cannot be undone. Selected files and folders will be permanently erased from the server disk.
+      </p>
+      <div class="danger-callout">
+        <div id="deleteSummaryText">You are about to permanently delete:</div>
+        <ul id="deleteTargetList" class="danger-list"></ul>
+      </div>
+      <div class="modal-actions">
+        <button id="btnCancelDelete" class="btn btn-ghost" type="button">Cancel</button>
+        <button id="btnConfirmDelete" class="btn btn-danger" type="button">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastStack" class="toast-stack"></div>
+
+  <script>
+    (() => {
+      const API_BASE = window.location.protocol === "file:" ? "http://127.0.0.1:8080" : "";
+
+      const state = {
+        role: null,
+        token: sessionStorage.getItem("lab_admin_token") || null,
+        currentPath: "",
+        parentPath: null,
+        items: [],
+        selectedPaths: new Set(),
+        uploadMode: "multi",       // "multi" | "update"
+        activeUploadXhr: null,
+        uploadAborted: false,
+        isUploading: false,
+        moveMode: "single",        // "single" | "bulk"
+        pendingMoveSources: [],
+        pendingDeleteItems: [],
+      };
+
+      const el = {
+        gateScreen: document.getElementById("gateScreen"),
+        appShell: document.getElementById("appShell"),
+        gateServerStatus: document.getElementById("gateServerStatus"),
+        gateThreadInfo: document.getElementById("gateThreadInfo"),
+        btnEnterGuest: document.getElementById("btnEnterGuest"),
+        adminLoginForm: document.getElementById("adminLoginForm"),
+        adminPasswordInput: document.getElementById("adminPasswordInput"),
+        loginError: document.getElementById("loginError"),
+
+        topBar: document.getElementById("topBar"),
+        roleBadge: document.getElementById("roleBadge"),
+        btnSwitchRole: document.getElementById("btnSwitchRole"),
+        btnLogout: document.getElementById("btnLogout"),
+        adminStrip: document.getElementById("adminStrip"),
+        btnOpenUpload: document.getElementById("btnOpenUpload"),
+        btnOpenFolder: document.getElementById("btnOpenFolder"),
+
+        bulkBar: document.getElementById("bulkBar"),
+        bulkCountLabel: document.getElementById("bulkCountLabel"),
+        btnBulkMove: document.getElementById("btnBulkMove"),
+        btnBulkDelete: document.getElementById("btnBulkDelete"),
+        btnClearSelection: document.getElementById("btnClearSelection"),
+
+        breadcrumbs: document.getElementById("breadcrumbs"),
+        searchInput: document.getElementById("searchInput"),
+        btnUpFolder: document.getElementById("btnUpFolder"),
+        btnRefresh: document.getElementById("btnRefresh"),
+        thSelectAll: document.getElementById("thSelectAll"),
+        selectAllCheckbox: document.getElementById("selectAllCheckbox"),
+        fileTableBody: document.getElementById("fileTableBody"),
+        statusPath: document.getElementById("statusPath"),
+        statusCount: document.getElementById("statusCount"),
+        statusThread: document.getElementById("statusThread"),
+
+        // Upload modal
+        uploadModal: document.getElementById("uploadModal"),
+        uploadModalTitle: document.getElementById("uploadModalTitle"),
+        uploadModalDesc: document.getElementById("uploadModalDesc"),
+        uploadFileInput: document.getElementById("uploadFileInput"),
+        singleTargetNameField: document.getElementById("singleTargetNameField"),
+        uploadTargetName: document.getElementById("uploadTargetName"),
+        uploadQueueList: document.getElementById("uploadQueueList"),
+        uploadOverwriteCheck: document.getElementById("uploadOverwriteCheck"),
+        uploadProgressWrap: document.getElementById("uploadProgressWrap"),
+        uploadProgressText: document.getElementById("uploadProgressText"),
+        uploadProgressBytes: document.getElementById("uploadProgressBytes"),
+        uploadProgressFill: document.getElementById("uploadProgressFill"),
+        btnCancelUpload: document.getElementById("btnCancelUpload"),
+        btnStartUpload: document.getElementById("btnStartUpload"),
+
+        // Folder modal
+        folderModal: document.getElementById("folderModal"),
+        folderForm: document.getElementById("folderForm"),
+        folderNameInput: document.getElementById("folderNameInput"),
+        btnCancelFolder: document.getElementById("btnCancelFolder"),
+
+        // Move modal
+        moveModal: document.getElementById("moveModal"),
+        moveModalTitle: document.getElementById("moveModalTitle"),
+        moveModalDesc: document.getElementById("moveModalDesc"),
+        moveForm: document.getElementById("moveForm"),
+        singleMoveFields: document.getElementById("singleMoveFields"),
+        moveSourceInput: document.getElementById("moveSourceInput"),
+        moveDestInput: document.getElementById("moveDestInput"),
+        bulkMoveFields: document.getElementById("bulkMoveFields"),
+        bulkMoveListLabel: document.getElementById("bulkMoveListLabel"),
+        bulkMovePreviewList: document.getElementById("bulkMovePreviewList"),
+        bulkMoveDestDir: document.getElementById("bulkMoveDestDir"),
+        folderSuggestions: document.getElementById("folderSuggestions"),
+        btnCancelMove: document.getElementById("btnCancelMove"),
+        btnSubmitMove: document.getElementById("btnSubmitMove"),
+
+        // Delete modal
+        deleteModal: document.getElementById("deleteModal"),
+        deleteSummaryText: document.getElementById("deleteSummaryText"),
+        deleteTargetList: document.getElementById("deleteTargetList"),
+        btnCancelDelete: document.getElementById("btnCancelDelete"),
+        btnConfirmDelete: document.getElementById("btnConfirmDelete"),
+
+        toastStack: document.getElementById("toastStack"),
+      };
+
+      // =======================================================================
+      // Utilities
+      // =======================================================================
+      function formatBytes(bytes) {
+        if (bytes === 0) return "0 B";
+        const units = ["B", "KB", "MB", "GB", "TB"];
+        const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+        const val = bytes / Math.pow(1024, i);
+        return `${i === 0 ? Math.round(val) : val.toFixed(1)} ${units[i]}`;
+      }
+
+      function formatDate(iso) {
+        return iso ? iso.replace("T", " ") : "--";
+      }
+
+      function joinRemotePath(base, segment) {
+        const cleanSeg = segment.replace(/^\/+|\/+$/g, "");
+        return base ? `${base}/${cleanSeg}` : cleanSeg;
+      }
+
+      function getVisibleItems() {
+        const filter = el.searchInput.value.trim().toLowerCase();
+        return state.items.filter((item) => item.name.toLowerCase().includes(filter));
+      }
+
+      function showToast(message, type = "info") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        el.toastStack.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 220);
+        }, 4200);
+      }
+
+      async function apiRequest(method, path, bodyObj = null) {
+        const headers = {};
+        if (state.token) {
+          headers["Authorization"] = `Bearer ${state.token}`;
+        }
+        if (bodyObj !== null) {
+          headers["Content-Type"] = "application/json";
+        }
+
+        const res = await fetch(`${API_BASE}${path}`, {
+          method,
+          headers,
+          body: bodyObj !== null ? JSON.stringify(bodyObj) : undefined,
+        });
+
+        const threadHeader = res.headers.get("X-Served-By-Thread");
+        if (threadHeader) {
+          el.statusThread.textContent = threadHeader;
+        }
+
+        let data = {};
+        try {
+          data = await res.json();
+        } catch {
+          data = { error: `HTTP ${res.status}` };
+        }
+
+        if (res.status === 401 && state.role === "admin" && path !== "/api/auth/login") {
+          clearAdminSession();
+          showGateScreen();
+          showToast("Admin session expired. Please sign in again.", "error");
+        }
+
+        return { ok: res.ok, status: res.status, data };
+      }
+
+      // =======================================================================
+      // Inline SVG Icons
+      // =======================================================================
+      const FOLDER_SVG = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F2C200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>`;
+
+      const FILE_SVG = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D3EFF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>`;
+
+      // =======================================================================
+      // Screen & Role Management
+      // =======================================================================
+      function clearAdminSession() {
+        state.token = null;
+        sessionStorage.removeItem("lab_admin_token");
+      }
+
+      function clearSelection() {
+        state.selectedPaths.clear();
+        updateBulkUI();
+      }
+
+      function showGateScreen() {
+        state.role = null;
+        clearSelection();
+        el.appShell.classList.add("hidden");
+        el.gateScreen.classList.remove("hidden");
+        el.loginError.classList.add("hidden");
+        el.adminPasswordInput.value = "";
+      }
+
+      function enterWorkspace(role) {
+        state.role = role;
+        const isAdmin = role === "admin";
+        clearSelection();
+
+        el.gateScreen.classList.add("hidden");
+        el.appShell.classList.remove("hidden");
+
+        el.topBar.classList.toggle("admin-mode", isAdmin);
+        el.roleBadge.textContent = isAdmin ? "Admin" : "Guest";
+        el.roleBadge.className = `role-pill ${isAdmin ? "admin" : "guest"}`;
+        el.adminStrip.classList.toggle("hidden", !isAdmin);
+        el.thSelectAll.classList.toggle("hidden", !isAdmin);
+        el.btnLogout.classList.toggle("hidden", !isAdmin);
+        el.btnSwitchRole.textContent = isAdmin ? "Role Menu" : "Switch to Admin";
+
+        loadDirectory(state.currentPath);
+      }
+
+      async function checkServerStatus() {
+        try {
+          const { ok, data } = await apiRequest("GET", "/api/info");
+          if (ok) {
+            el.gateServerStatus.textContent = "Online";
+            el.gateThreadInfo.textContent = `Worker: ${data.served_by_thread || "Active"} • Chunk: ${formatBytes(data.chunk_size || 65536)}`;
+            if (state.token && data.role === "admin") {
+              enterWorkspace("admin");
+            }
+          } else {
+            el.gateServerStatus.textContent = "Error";
+          }
+        } catch {
+          el.gateServerStatus.textContent = "Unreachable (start server.py)";
+        }
+      }
+
+      // =======================================================================
+      // Multi-Select & Bulk Bar Helpers
+      // =======================================================================
+      function updateBulkUI() {
+        const isAdmin = state.role === "admin";
+        const count = state.selectedPaths.size;
+
+        el.bulkBar.classList.toggle("hidden", !isAdmin || count === 0);
+        el.bulkCountLabel.textContent = `${count} item${count === 1 ? "" : "s"} selected`;
+
+        const visible = getVisibleItems();
+        if (!isAdmin || visible.length === 0) {
+          el.selectAllCheckbox.checked = false;
+          el.selectAllCheckbox.indeterminate = false;
+          return;
+        }
+
+        const checkedVisible = visible.filter((it) => state.selectedPaths.has(it.path)).length;
+        el.selectAllCheckbox.checked = checkedVisible === visible.length;
+        el.selectAllCheckbox.indeterminate = checkedVisible > 0 && checkedVisible < visible.length;
+      }
+
+      function getSelectedItems() {
+        return state.items.filter((item) => state.selectedPaths.has(item.path));
+      }
+
+      // =======================================================================
+      // Directory Rendering
+      // =======================================================================
+      async function loadDirectory(path = "") {
+        const encoded = encodeURIComponent(path);
+        const { ok, data } = await apiRequest("GET", `/api/files?path=${encoded}`);
+        if (!ok) {
+          showToast(data.error || "Could not load directory.", "error");
+          if (path !== "") loadDirectory("");
+          return;
+        }
+
+        state.currentPath = data.current_path || "";
+        state.parentPath = data.parent_path;
+        state.items = data.items || [];
+        state.selectedPaths.clear();
+        el.searchInput.value = "";
+
+        renderBreadcrumbs();
+        renderFileTable();
+      }
+
+      function renderBreadcrumbs() {
+        el.breadcrumbs.innerHTML = "";
+        const rootBtn = document.createElement("button");
+        rootBtn.type = "button";
+        rootBtn.className = "crumb-btn";
+        rootBtn.textContent = "Projects Laboratory";
+        rootBtn.addEventListener("click", () => loadDirectory(""));
+        el.breadcrumbs.appendChild(rootBtn);
+
+        const parts = state.currentPath ? state.currentPath.split("/") : [];
+        let acc = "";
+        parts.forEach((part) => {
+          const sep = document.createElement("span");
+          sep.className = "crumb-sep";
+          sep.textContent = "/";
+          el.breadcrumbs.appendChild(sep);
+
+          acc = acc ? `${acc}/${part}` : part;
+          const targetPath = acc;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "crumb-btn";
+          btn.textContent = part;
+          btn.addEventListener("click", () => loadDirectory(targetPath));
+          el.breadcrumbs.appendChild(btn);
+        });
+
+        el.btnUpFolder.disabled = state.parentPath === null;
+        el.statusPath.textContent = state.currentPath ? `/${state.currentPath}` : "/";
+      }
+
+      function renderFileTable() {
+        const isAdmin = state.role === "admin";
+        const visible = getVisibleItems();
+        const filter = el.searchInput.value.trim();
+
+        el.statusCount.textContent = String(visible.length);
+        el.fileTableBody.innerHTML = "";
+
+        if (visible.length === 0) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = isAdmin ? 6 : 5;
+          td.innerHTML = `
+            <div class="empty-state">
+              <h3>${filter ? "No matching items" : "This folder is empty"}</h3>
+              <p>${isAdmin
+                ? "Use '+ Upload Files' or '+ New Folder' above to add content here."
+                : "No courses, tools, or files have been uploaded to this path yet."}</p>
+            </div>`;
+          tr.appendChild(td);
+          el.fileTableBody.appendChild(tr);
+          updateBulkUI();
+          return;
+        }
+
+        visible.forEach((item) => {
+          const tr = document.createElement("tr");
+          const isFolder = item.type === "folder";
+          const isChecked = isAdmin && state.selectedPaths.has(item.path);
+          if (isChecked) tr.classList.add("selected");
+
+          // Col 0 (Admin only): Selection Checkbox
+          if (isAdmin) {
+            const tdCheck = document.createElement("td");
+            tdCheck.className = "col-check";
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.checked = isChecked;
+            cb.setAttribute("aria-label", `Select ${item.name}`);
+            cb.addEventListener("change", () => {
+              if (cb.checked) {
+                state.selectedPaths.add(item.path);
+                tr.classList.add("selected");
+              } else {
+                state.selectedPaths.delete(item.path);
+                tr.classList.remove("selected");
+              }
+              updateBulkUI();
+            });
+            tdCheck.appendChild(cb);
+            tr.appendChild(tdCheck);
+          }
+
+          // Col 1: Name + Icon
+          const tdName = document.createElement("td");
+          const nameWrap = document.createElement("div");
+          nameWrap.className = "item-name-cell";
+          nameWrap.innerHTML = isFolder ? FOLDER_SVG : FILE_SVG;
+
+          if (isFolder) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "item-link folder";
+            btn.textContent = item.name;
+            btn.addEventListener("click", () => loadDirectory(item.path));
+            nameWrap.appendChild(btn);
+          } else {
+            const span = document.createElement("span");
+            span.textContent = item.name;
+            nameWrap.appendChild(span);
+          }
+          tdName.appendChild(nameWrap);
+
+          // Col 2: Type
+          const tdType = document.createElement("td");
+          tdType.className = "mono-col";
+          tdType.textContent = isFolder ? "FOLDER" : "FILE";
+
+          // Col 3: Size
+          const tdSize = document.createElement("td");
+          tdSize.className = "mono-col";
+          tdSize.textContent = isFolder ? "--" : formatBytes(item.size);
+
+          // Col 4: Modified
+          const tdMod = document.createElement("td");
+          tdMod.className = "mono-col";
+          tdMod.textContent = formatDate(item.modified);
+
+          // Col 5: Actions
+          const tdAct = document.createElement("td");
+          const actWrap = document.createElement("div");
+          actWrap.className = "row-actions";
+
+          if (isFolder) {
+            const openBtn = document.createElement("button");
+            openBtn.type = "button";
+            openBtn.className = "btn btn-ghost btn-sm";
+            openBtn.textContent = "Open";
+            openBtn.addEventListener("click", () => loadDirectory(item.path));
+            actWrap.appendChild(openBtn);
+          } else {
+            const dlLink = document.createElement("a");
+            dlLink.className = "btn btn-ice btn-sm";
+            dlLink.textContent = "Download";
+            dlLink.href = `${API_BASE}/api/download?path=${encodeURIComponent(item.path)}`;
+            dlLink.setAttribute("download", item.name);
+            actWrap.appendChild(dlLink);
+          }
+
+          if (isAdmin) {
+            if (!isFolder) {
+              const updateBtn = document.createElement("button");
+              updateBtn.type = "button";
+              updateBtn.className = "btn btn-ghost btn-sm";
+              updateBtn.textContent = "Update";
+              updateBtn.addEventListener("click", () => openUploadModal(item.name));
+              actWrap.appendChild(updateBtn);
+            }
+
+            const moveBtn = document.createElement("button");
+            moveBtn.type = "button";
+            moveBtn.className = "btn btn-ghost btn-sm";
+            moveBtn.textContent = "Move";
+            moveBtn.addEventListener("click", () => openSingleMoveModal(item));
+            actWrap.appendChild(moveBtn);
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "btn btn-danger btn-sm";
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", () => openDeleteModal([item]));
+            actWrap.appendChild(delBtn);
+          }
+
+          tdAct.appendChild(actWrap);
+          tr.append(tdName, tdType, tdSize, tdMod, tdAct);
+          el.fileTableBody.appendChild(tr);
+        });
+
+        updateBulkUI();
+      }
+
+      // =======================================================================
+      // Admin Feature: Multi-File Streaming Upload / Single Update
+      // =======================================================================
+      function openUploadModal(prefillName = "") {
+        const isUpdate = Boolean(prefillName);
+        state.uploadMode = isUpdate ? "update" : "multi";
+        state.uploadAborted = false;
+        state.isUploading = false;
+
+        el.uploadFileInput.value = "";
+        el.uploadFileInput.multiple = !isUpdate;
+        el.uploadFileInput.disabled = false;
+        el.uploadTargetName.value = prefillName;
+        el.uploadTargetName.disabled = false;
+        el.uploadOverwriteCheck.checked = isUpdate;
+        el.uploadOverwriteCheck.disabled = false;
+
+        el.uploadModalTitle.textContent = isUpdate ? `Update File: ${prefillName}` : "Upload Files";
+        el.uploadModalDesc.textContent = isUpdate
+          ? "Choose a replacement file to overwrite the existing version on the server."
+          : "Select one or multiple files. Large files stream sequentially in 64 KB chunks.";
+
+        el.singleTargetNameField.classList.toggle("hidden", !isUpdate);
+        el.uploadQueueList.classList.add("hidden");
+        el.uploadQueueList.innerHTML = "";
+        el.uploadProgressWrap.classList.add("hidden");
+        el.uploadProgressFill.style.width = "0%";
+        el.btnStartUpload.disabled = false;
+        el.uploadModal.classList.remove("hidden");
+      }
+
+      function renderUploadQueuePreview(files) {
+        el.uploadQueueList.innerHTML = "";
+        if (files.length <= 1) {
+          el.uploadQueueList.classList.add("hidden");
+          el.singleTargetNameField.classList.remove("hidden");
+          if (files.length === 1 && state.uploadMode !== "update") {
+            el.uploadTargetName.value = files[0].name;
+          }
+          return;
+        }
+
+        el.singleTargetNameField.classList.add("hidden");
+        el.uploadQueueList.classList.remove("hidden");
+
+        files.forEach((file, idx) => {
+          const row = document.createElement("div");
+          row.className = "preview-row";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "preview-name";
+          nameSpan.textContent = `${file.name} (${formatBytes(file.size)})`;
+
+          const badge = document.createElement("span");
+          badge.id = `uploadQueueBadge-${idx}`;
+          badge.className = "queue-badge queued";
+          badge.textContent = "Queued";
+
+          row.append(nameSpan, badge);
+          el.uploadQueueList.appendChild(row);
+        });
+      }
+
+      function setQueueBadge(idx, cls, text) {
+        const badge = document.getElementById(`uploadQueueBadge-${idx}`);
+        if (badge) {
+          badge.className = `queue-badge ${cls}`;
+          badge.textContent = text;
+        }
+      }
+
+      function closeUploadModal() {
+        if (state.isUploading) {
+          state.uploadAborted = true;
+          if (state.activeUploadXhr) {
+            state.activeUploadXhr.abort();
+            state.activeUploadXhr = null;
+          }
+          showToast("Upload queue canceled.", "error");
+        }
+        el.uploadModal.classList.add("hidden");
+      }
+
+      function uploadSingleFileXHR(file, remotePath, overwrite, onProgress) {
+        return new Promise((resolve) => {
+          const url = `${API_BASE}/api/upload?path=${encodeURIComponent(remotePath)}&overwrite=${overwrite ? "true" : "false"}`;
+          const xhr = new XMLHttpRequest();
+          state.activeUploadXhr = xhr;
+
+          xhr.upload.addEventListener("progress", (evt) => {
+            if (evt.lengthComputable && evt.total > 0) {
+              onProgress(evt.loaded, evt.total);
+            }
+          });
+
+          xhr.addEventListener("load", () => {
+            state.activeUploadXhr = null;
+            const threadHdr = xhr.getResponseHeader("X-Served-By-Thread");
+            if (threadHdr) el.statusThread.textContent = threadHdr;
+
+            let data = {};
+            try {
+              data = JSON.parse(xhr.responseText || "{}");
+            } catch {}
+
+            resolve({
+              ok: xhr.status >= 200 && xhr.status < 300,
+              status: xhr.status,
+              data,
+              aborted: false,
+            });
+          });
+
+          xhr.addEventListener("abort", () => {
+            state.activeUploadXhr = null;
+            resolve({ ok: false, status: 0, data: { error: "Canceled" }, aborted: true });
+          });
+
+          xhr.addEventListener("error", () => {
+            state.activeUploadXhr = null;
+            resolve({ ok: false, status: 0, data: { error: "Network error" }, aborted: false });
+          });
+
+          xhr.open("POST", url);
+          xhr.setRequestHeader("Authorization", `Bearer ${state.token}`);
+          xhr.setRequestHeader("Content-Type", "application/octet-stream");
+          xhr.send(file);
+        });
+      }
+
+      el.uploadFileInput.addEventListener("change", () => {
+        const files = Array.from(el.uploadFileInput.files || []);
+        renderUploadQueuePreview(files);
+      });
+
+      el.btnStartUpload.addEventListener("click", async () => {
+        const files = Array.from(el.uploadFileInput.files || []);
+        if (files.length === 0) {
+          showToast("Select at least one file first.", "error");
+          return;
+        }
+
+        if (files.length === 1 && !el.uploadTargetName.value.trim()) {
+          showToast("Target filename cannot be empty.", "error");
+          return;
+        }
+
+        const overwrite = el.uploadOverwriteCheck.checked;
+        state.isUploading = true;
+        state.uploadAborted = false;
+        el.btnStartUpload.disabled = true;
+        el.uploadFileInput.disabled = true;
+        el.uploadTargetName.disabled = true;
+        el.uploadOverwriteCheck.disabled = true;
+        el.uploadProgressWrap.classList.remove("hidden");
+
+        let succeeded = 0;
+        let failedCount = 0;
+        let lastError = "";
+
+        for (let i = 0; i < files.length; i++) {
+          if (state.uploadAborted) break;
+
+          const file = files[i];
+          const targetName = files.length === 1 ? el.uploadTargetName.value.trim() : file.name;
+          const remotePath = joinRemotePath(state.currentPath, targetName);
+          const prefix = files.length > 1 ? `File ${i + 1}/${files.length} • ` : "";
+
+          setQueueBadge(i, "active", "Uploading...");
+          el.uploadProgressFill.style.width = "0%";
+          el.uploadProgressText.textContent = `${prefix}0%`;
+          el.uploadProgressBytes.textContent = `0 B / ${formatBytes(file.size)}`;
+
+          const res = await uploadSingleFileXHR(file, remotePath, overwrite, (loaded, total) => {
+            const pct = Math.min(100, (loaded / total) * 100);
+            el.uploadProgressFill.style.width = `${pct.toFixed(1)}%`;
+            el.uploadProgressText.textContent = `${prefix}${pct.toFixed(1)}%`;
+            el.uploadProgressBytes.textContent = `${formatBytes(loaded)} / ${formatBytes(total)}`;
+          });
+
+          if (res.aborted) {
+            setQueueBadge(i, "failed", "Canceled");
+            break;
+          }
+
+          if (res.ok) {
+            succeeded++;
+            setQueueBadge(i, "done", "Done");
+            el.uploadProgressFill.style.width = "100%";
+          } else {
+            failedCount++;
+            lastError = res.data.error || `HTTP ${res.status}`;
+            setQueueBadge(i, "failed", "Failed");
+            if (res.status === 401) {
+              clearAdminSession();
+              el.uploadModal.classList.add("hidden");
+              showGateScreen();
+              showToast("Admin session expired. Please sign in again.", "error");
+              state.isUploading = false;
+              return;
+            }
+          }
+        }
+
+        state.isUploading = false;
+        el.btnStartUpload.disabled = false;
+        el.uploadFileInput.disabled = false;
+        el.uploadTargetName.disabled = false;
+        el.uploadOverwriteCheck.disabled = false;
+
+        if (!state.uploadAborted) {
+          if (failedCount === 0) {
+            el.uploadModal.classList.add("hidden");
+            showToast(
+              succeeded === 1 ? "File uploaded successfully." : `Uploaded ${succeeded} files successfully.`,
+              "success"
+            );
+          } else if (succeeded > 0) {
+            showToast(`Uploaded ${succeeded} file(s); ${failedCount} failed (${lastError}).`, "error");
+          } else {
+            showToast(lastError || "Upload failed.", "error");
+          }
+        }
+
+        if (succeeded > 0) {
+          loadDirectory(state.currentPath);
+        }
+      });
+
+      // =======================================================================
+      // Admin Feature: Create Folder
+      // =======================================================================
+      function openFolderModal() {
+        el.folderNameInput.value = "";
+        el.folderModal.classList.remove("hidden");
+        el.folderNameInput.focus();
+      }
+
+      el.folderForm.addEventListener("submit", async (evt) => {
+        evt.preventDefault();
+        const name = el.folderNameInput.value.trim();
+        if (!name) return;
+
+        const targetPath = joinRemotePath(state.currentPath, name);
+        const { ok, data } = await apiRequest("POST", "/api/folder", { path: targetPath });
+        if (ok) {
+          el.folderModal.classList.add("hidden");
+          showToast(data.message || "Folder created.", "success");
+          loadDirectory(state.currentPath);
+        } else {
+          showToast(data.error || "Could not create folder.", "error");
+        }
+      });
+
+      // =======================================================================
+      // Admin Feature: Single Move/Rename & Bulk Move
+      // =======================================================================
+      function openSingleMoveModal(item) {
+        state.moveMode = "single";
+        state.pendingMoveSources = [item.path];
+
+        el.moveModalTitle.textContent = "Move or Rename";
+        el.moveModalDesc.innerHTML =
+          "Edit the destination path relative to the root of <strong>Projects Laboratory</strong>.";
+        el.singleMoveFields.classList.remove("hidden");
+        el.bulkMoveFields.classList.add("hidden");
+        el.moveDestInput.required = true;
+
+        el.moveSourceInput.value = item.path;
+        el.moveDestInput.value = item.path;
+        el.btnSubmitMove.textContent = "Save Changes";
+        el.moveModal.classList.remove("hidden");
+        el.moveDestInput.focus();
+        el.moveDestInput.select();
+      }
+
+      async function openBulkMoveModal(items) {
+        if (!items.length) return;
+        state.moveMode = "bulk";
+        state.pendingMoveSources = items.map((it) => it.path);
+
+        el.moveModalTitle.textContent = `Move ${items.length} Selected Item${items.length === 1 ? "" : "s"}`;
+        el.moveModalDesc.textContent =
+          "Choose the destination folder. All selected items keep their original names.";
+        el.singleMoveFields.classList.add("hidden");
+        el.bulkMoveFields.classList.remove("hidden");
+        el.moveDestInput.required = false;
+
+        el.bulkMoveListLabel.textContent = `Selected Items (${items.length})`;
+        el.bulkMovePreviewList.innerHTML = "";
+        items.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "preview-row";
+          const name = document.createElement("span");
+          name.className = "preview-name";
+          name.textContent = `${item.type === "folder" ? "[DIR] " : ""}/${item.path}`;
+          row.appendChild(name);
+          el.bulkMovePreviewList.appendChild(row);
+        });
+
+        el.bulkMoveDestDir.value = state.currentPath;
+        el.btnSubmitMove.textContent = `Move ${items.length} Item${items.length === 1 ? "" : "s"}`;
+        el.moveModal.classList.remove("hidden");
+        el.bulkMoveDestDir.focus();
+        el.bulkMoveDestDir.select();
+
+        // Populate folder autocomplete suggestions from backend
+        const { ok, data } = await apiRequest("GET", "/api/folders");
+        if (ok && Array.isArray(data.folders)) {
+          el.folderSuggestions.innerHTML = "";
+          data.folders.forEach((folderPath) => {
+            const opt = document.createElement("option");
+            opt.value = folderPath || "/";
+            el.folderSuggestions.appendChild(opt);
+          });
+        }
+      }
+
+      el.moveForm.addEventListener("submit", async (evt) => {
+        evt.preventDefault();
+        el.btnSubmitMove.disabled = true;
+
+        if (state.moveMode === "single") {
+          const source = el.moveSourceInput.value.trim();
+          const destination = el.moveDestInput.value.trim();
+          if (!source || !destination) {
+            el.btnSubmitMove.disabled = false;
+            return;
+          }
+
+          const { ok, data } = await apiRequest("PUT", "/api/move", { source, destination });
+          el.btnSubmitMove.disabled = false;
+
+          if (ok) {
+            el.moveModal.classList.add("hidden");
+            showToast(data.message || "Item moved.", "success");
+            loadDirectory(state.currentPath);
+          } else {
+            showToast(data.error || "Move failed.", "error");
+          }
+          return;
+        }
+
+        // Bulk Move
+        let destDir = el.bulkMoveDestDir.value.trim();
+        if (destDir === "/") destDir = "";
+
+        const { ok, data } = await apiRequest("PUT", "/api/move", {
+          sources: state.pendingMoveSources,
+          destination_dir: destDir,
+        });
+        el.btnSubmitMove.disabled = false;
+
+        if (ok) {
+          el.moveModal.classList.add("hidden");
+          const isPartial = data.status === "partial";
+          const detail = isPartial && data.failed?.length
+            ? ` (${data.failed[0].path}: ${data.failed[0].error})`
+            : "";
+          showToast((data.message || "Items moved.") + detail, isPartial ? "error" : "success");
+          loadDirectory(state.currentPath);
+        } else {
+          showToast(data.error || "Bulk move failed.", "error");
+        }
+      });
+
+      // =======================================================================
+      // Admin Feature: Permanent Delete Confirmation (Single or Bulk)
+      // =======================================================================
+      function openDeleteModal(items) {
+        if (!items.length) return;
+        state.pendingDeleteItems = items;
+
+        if (items.length === 1) {
+          const kind = items[0].type === "folder" ? "folder and all its contents" : "file";
+          el.deleteSummaryText.textContent = `You are about to permanently delete this ${kind}:`;
+        } else {
+          el.deleteSummaryText.textContent = `You are about to permanently delete ${items.length} selected items:`;
+        }
+
+        el.deleteTargetList.innerHTML = "";
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = `${item.type === "folder" ? "[FOLDER] " : ""}/${item.path}`;
+          el.deleteTargetList.appendChild(li);
+        });
+
+        el.btnConfirmDelete.textContent =
+          items.length === 1 ? "Delete Permanently" : `Delete ${items.length} Items Permanently`;
+        el.deleteModal.classList.remove("hidden");
+      }
+
+      el.btnConfirmDelete.addEventListener("click", async () => {
+        const items = state.pendingDeleteItems;
+        if (!items.length) return;
+
+        el.btnConfirmDelete.disabled = true;
+        let res;
+        if (items.length === 1) {
+          res = await apiRequest(
+            "DELETE",
+            `/api/delete?path=${encodeURIComponent(items[0].path)}`
+          );
+        } else {
+          res = await apiRequest("DELETE", "/api/delete", {
+            paths: items.map((it) => it.path),
+          });
+        }
+        el.btnConfirmDelete.disabled = false;
+
+        if (res.ok) {
+          state.pendingDeleteItems = [];
+          el.deleteModal.classList.add("hidden");
+          const isPartial = res.data.status === "partial";
+          const detail = isPartial && res.data.failed?.length
+            ? ` (${res.data.failed[0].path}: ${res.data.failed[0].error})`
+            : "";
+          showToast((res.data.message || "Permanently deleted.") + detail, isPartial ? "error" : "success");
+          loadDirectory(state.currentPath);
+        } else {
+          showToast(res.data.error || "Delete failed.", "error");
+        }
+      });
+
+      // =======================================================================
+      // Event Listeners
+      // =======================================================================
+      el.btnEnterGuest.addEventListener("click", () => enterWorkspace("guest"));
+
+      el.adminLoginForm.addEventListener("submit", async (evt) => {
+        evt.preventDefault();
+        el.loginError.classList.add("hidden");
+        const password = el.adminPasswordInput.value;
+
+        try {
+          const { ok, data } = await apiRequest("POST", "/api/auth/login", { password });
+          if (ok && data.token) {
+            state.token = data.token;
+            sessionStorage.setItem("lab_admin_token", data.token);
+            enterWorkspace("admin");
+            showToast("Admin mode unlocked.", "success");
+          } else {
+            el.loginError.textContent = data.error || "Invalid password.";
+            el.loginError.classList.remove("hidden");
+          }
+        } catch {
+          el.loginError.textContent = "Cannot connect to Projects Laboratory server.";
+          el.loginError.classList.remove("hidden");
+        }
+      });
+
+      el.btnSwitchRole.addEventListener("click", () => showGateScreen());
+
+      el.btnLogout.addEventListener("click", async () => {
+        if (state.token) {
+          try { await apiRequest("POST", "/api/auth/logout"); } catch {}
+        }
+        clearAdminSession();
+        showGateScreen();
+        showToast("Admin logged out.");
+      });
+
+      el.btnUpFolder.addEventListener("click", () => {
+        if (state.parentPath !== null) loadDirectory(state.parentPath);
+      });
+
+      el.btnRefresh.addEventListener("click", () => loadDirectory(state.currentPath));
+      el.searchInput.addEventListener("input", renderFileTable);
+
+      // Select All visible items
+      el.selectAllCheckbox.addEventListener("change", () => {
+        const visible = getVisibleItems();
+        if (el.selectAllCheckbox.checked) {
+          visible.forEach((it) => state.selectedPaths.add(it.path));
+        } else {
+          visible.forEach((it) => state.selectedPaths.delete(it.path));
+        }
+        renderFileTable();
+      });
+
+      el.btnClearSelection.addEventListener("click", () => {
+        clearSelection();
+        renderFileTable();
+      });
+
+      el.btnBulkMove.addEventListener("click", () => openBulkMoveModal(getSelectedItems()));
+      el.btnBulkDelete.addEventListener("click", () => openDeleteModal(getSelectedItems()));
+
+      el.btnOpenUpload.addEventListener("click", () => openUploadModal(""));
+      el.btnCancelUpload.addEventListener("click", closeUploadModal);
+
+      el.btnOpenFolder.addEventListener("click", openFolderModal);
+      el.btnCancelFolder.addEventListener("click", () => el.folderModal.classList.add("hidden"));
+
+      el.btnCancelMove.addEventListener("click", () => el.moveModal.classList.add("hidden"));
+      el.btnCancelDelete.addEventListener("click", () => {
+        state.pendingDeleteItems = [];
+        el.deleteModal.classList.add("hidden");
+      });
+
+      window.addEventListener("keydown", (evt) => {
+        if (evt.key === "Escape") {
+          if (!el.uploadModal.classList.contains("hidden")) closeUploadModal();
+          el.folderModal.classList.add("hidden");
+          el.moveModal.classList.add("hidden");
+          el.deleteModal.classList.add("hidden");
+        }
+      });
+
+      // Boot
+      checkServerStatus();
+    })();
+  </script>
+</body>
+</html>
